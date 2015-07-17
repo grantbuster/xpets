@@ -11,6 +11,9 @@ if plotboolean==1
     hold on
     plot3(x , y , z , 'g^')
     axis equal
+    xlabel('x (m)')
+    ylabel('y (m)')
+    zlabel('z (m)')
 end
 
 % set scan radius (m) from xyz
