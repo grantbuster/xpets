@@ -1,7 +1,7 @@
 clc
 
 
-if 0
+if 1
     clear
         filename='20150128_03_';
         % filename='20150128_04_';
@@ -79,15 +79,17 @@ output_pins=[];
 
 out=[];
 threshold.contrast=0;
-threshold.luminosity=0.2;
+threshold.luminosity=0.1;
 threshold.length=0.7;
 
 threshold.found_lum=3;
 threshold.found_con=3;
 
-pnt=[2076 1509]; % point seen in imageangle as definitely on a single pin [pixels] [row column]
+%enter point in imageangle on a single pin [pixels][row,column]
+pnt=[2056 1373]; 
+imageangle=theta.c;
 
-[point3D , vector3D]=Get_1pnt_Vector(pnt, theta.c, geo ,0);
+[point3D , vector3D]=Get_1pnt_Vector(pnt, imageangle, geo ,1);
 
 mesh=1e-4;
 endmesh=0.25;
@@ -142,11 +144,13 @@ toc
 
        figure
         hold on
-        plot(point_assessments(1,:),5*point_assessments(2,:),'b-')
-        plot(point_assessments(1,:),point_assessments(3,:),'r-')
-        plot(point_assessments(1,:),point_assessments(4,:),'m-')
+%         plot(point_assessments(1,:),5*point_assessments(2,:),'b-')
+        plot(point_assessments(1,:),point_assessments(2,:),'r-')
+        plot(point_assessments(1,:),point_assessments(3,:)./5,'b-')
         legend('Luminosity','Contrast','combined');
-        axis([0 endmesh 0 25])
+%         axis([0 endmesh 0 25])
+        xlabel('Distance along Vector3D')
+        ylabel('Luminosity or Contrast')
 
     end
 %%
@@ -234,7 +238,7 @@ toc
 toc
 
 %%
-if 0
+if 1
             %%
             figure
             box off
@@ -259,7 +263,7 @@ if 0
             zlabel('z')
 end
 %%
-if 0
+if 1
     validate=pin_points(:,:);
     labels=0;
     setaxis=[1383 1662 1979 2236];

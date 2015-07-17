@@ -33,6 +33,9 @@ if plotboolean==1
     plot3([Start(1) Direction(1)] , [Start(2) Direction(2)] , [Start(3) Direction(3)] , 'r-')
     axis equal
     legend('Start','Direction','Vector')
+    xlabel('x (m)')
+    ylabel('y (m)')
+    zlabel('z (m)')
 end
 
 
