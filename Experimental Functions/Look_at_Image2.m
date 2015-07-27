@@ -1,6 +1,11 @@
 function [ output_luminosity , output_contrast ] = Look_at_Image2( x,y,z,geo,theta,contrast,luminosity )
-% This function takes a single point (x,y,z) (meters) and finds the
+% This function takes a single point (x,y,z) (in meters) and finds the
 % contrast and luminosity for that point in the image specified by theta
+
+% x y and z define a point in 3D in meters. each is a single number
+% geo is a structure data type with O_y O_x O_z and Y_of fields
+% theta is the angle that the image in question was taken at
+% contrast and luminosity are both 3000x3000 matricies defining the image
 
 % define plane
 % point on plane in x;y;z notation 
@@ -27,9 +32,17 @@ intersection1(1)=sqrt(((intersection1(1)-left(1))^2)+((intersection1(2)-left(2))
 intersection1(3)=6993*(-intersection1(3)+geo.O_z);
 
 if intersection1(1)>2 && intersection1(1)<2998 && intersection1(3)>2 && intersection1(3)<2998
-    output_contrast  = Interpolate2D( intersection1(1) , intersection1(3) , contrast );
-    output_luminosity  = Interpolate2D( intersection1(1) , intersection1(3) , luminosity );
 
+%     Interpolate 2D function has been retired by fGetMasterInterpValue
+%     output_contrast  = Interpolate2D( intersection1(1) , intersection1(3) , contrast );
+%     output_luminosity  = Interpolate2D( intersection1(1) , intersection1(3) , luminosity );
+
+    %% use Mike's interpolation function to get the output interpolated contrast and luminosity data
+    
+    x_lo = floor(intersection1(1));
+    y_lo = floor(intersection1(3));
+    output_contrast = fGetMasterInterpValue(intersection1(1),intersection1(3),contrast(x_lo:x_lo+1,y_lo:y_lo+1));
+    output_luminosity = fGetMasterInterpValue(intersection1(1),intersection1(3),luminosity(x_lo:x_lo+1,y_lo:y_lo+1));
 
 
 

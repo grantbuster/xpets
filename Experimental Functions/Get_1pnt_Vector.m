@@ -1,8 +1,16 @@
 function [point3D , vector3D]=Get_1pnt_Vector(pnt, theta, geo, plotboolean)
 
-%this function will take a list of paired endpoints on the 2D image and 
-%place these endpoints in a 3D space as dictated by geometrical
-%measurements calculated using the geo solver code
+% This function will take a point (pnt in pixels) in one of the x-ray images with the
+% given theta and geo and return the x-ray vector that resulted in that pixel
+
+% pnt=[j i] (pixels) in the x-ray image 
+% theta=[double] 
+% geo=[struct]
+% plotboolean= 0 or 1
+
+% OUTPUTS:
+% point3D which is the input point on the detector plane in 3D (meters)
+% vector3D which is the vector from point3D to the x-ray source (meters)
 
 O_x=geo.O_x; 
 O_y=geo.O_y;

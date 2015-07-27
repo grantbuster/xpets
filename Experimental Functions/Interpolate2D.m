@@ -1,4 +1,8 @@
 function [ out ] = Interpolate2D( i , j , image )
+%--------------------------------------------------------------------------
+% THIS CODE HAS BEEN RETIRED BY fGetMasterInterpValue.m
+%--------------------------------------------------------------------------
+
 % Interpolates a single point in between four points
 
 % a=image(floor(j),floor(i));
