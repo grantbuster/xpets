@@ -1,8 +1,28 @@
+%%% ------------------------------------------------------------------- %%%
+% This script attempts to find a 3D pin given a 2D point that is on a pin
+% in one of the x-ray images
+% 
+% The general principle is that the code will attempt to find the
+% orientation of the pin based on scanning a sphere of points around a 3D
+% location 
+% 
+% This code should be improved by adding Mike's module 1 in the following
+% manner: Take single endpoints (hopefully with direction) and find where
+% the endpoints intersect in 3D. If they intersect very closely, take that
+% as the starting point. If the endpoints come with direction, you already
+% know a valid orientation. Walk along pin until you see low luminosity in
+% any image. Pin found!
+% 
+% Written by Grant Buster, summer 2015
+% 
+%%% ------------------------------------------------------------------- %%%
+
+%% INPUT DATA SET
 clc
-
-
 if 1
     clear
+        %% set names for current data set
+    
         filename='20150128_03_';
         % filename='20150128_04_';
         % filename='20150213_02_';
@@ -26,7 +46,8 @@ if 1
         str4=[filename,timestep_string,'_0675.mat'];
         str5=[filename,timestep_string,'_0900.mat'];
 
-        %%
+        %% Load relevant data
+        
         theta.a=0;
         theta.b=22.5;
         theta.c=45;
@@ -63,49 +84,53 @@ if 1
         imagedata=im2double(imagedata);
         luminosity.e=imagedata(:,:,1);
 
-        %%
+        %% Load geometry file
         load('geo.mat');
 end
 
 
-%%
+%% initialize boolean values, thresholds and inputs
 
+% miscellaneous 
 on_pin_fwd=1;
 on_pin_bwd=1;
 iter=1;
-
 full_pin_found=0;
 output_pins=[];
-
 out=[];
+
+% thresholds 
 threshold.contrast=0;
 threshold.luminosity=0.1;
 threshold.length=0.7;
-
 threshold.found_lum=3;
 threshold.found_con=3;
 
-%enter point in imageangle on a single pin [pixels][row,column]
+% enter point in imageangle on a single pin [pixels][row,column]
 pnt=[2056 1373]; 
 imageangle=theta.c;
 
+% get the x-ray vector that resulted in pnt
 [point3D , vector3D]=Get_1pnt_Vector(pnt, imageangle, geo ,1);
 
+% set mesh parameter along vector3D
 mesh=1e-4;
-endmesh=0.25;
+endmesh=0.25; % set endmesh so not many points outside of silo are checked
 metric_step_sizeXYZ=mesh*vector3D;
 
 point_assessments=zeros(4,length(0:mesh:endmesh));
 iter=1;
-%%
 
+
+%% Mesh along Vector3D attempting to find potential pin 3D location
 tic
-for t=0:mesh:endmesh
+for t=0:mesh:endmesh 
     
     point_assessments(1,iter)=t;
     
         full_pin_found=0;
             
+            % define 3D point along vector3D
             x = point3D(1)+t*vector3D(1);
             y = point3D(2)+t*vector3D(2);
             z = point3D(3)+t*vector3D(3);
@@ -125,21 +150,21 @@ for t=0:mesh:endmesh
             output_contrast.d=0;
             output_contrast.e=0;
 
-                %%
+                %% Check 3D point in all 5 images            
                     [ output_luminosity.a , output_contrast.a ] = Look_at_Image2( x,y,z,geo,theta.a,contrast.a,luminosity.a );
                     [ output_luminosity.b , output_contrast.b ] = Look_at_Image2( x,y,z,geo,theta.b,contrast.b,luminosity.b );
                     [ output_luminosity.c , output_contrast.c ] = Look_at_Image2( x,y,z,geo,theta.c,contrast.c,luminosity.c );
                     [ output_luminosity.d , output_contrast.d ] = Look_at_Image2( x,y,z,geo,theta.d,contrast.d,luminosity.d );
                     [ output_luminosity.e , output_contrast.e ] = Look_at_Image2( x,y,z,geo,theta.e,contrast.e,luminosity.e );
                     
-            %%
+            %% Output the luminosity and contrast data in a consolidated matrix, point_assessments
             point_assessments(2,iter)=output_luminosity.a+output_luminosity.b+output_luminosity.c+output_luminosity.d+output_luminosity.e;
             point_assessments(3,iter)=output_contrast.a+output_contrast.b+output_contrast.c+output_contrast.d+output_contrast.e;
             point_assessments(4,iter)=5*point_assessments(2,iter)+point_assessments(3,iter);
             iter=iter+1;
 end
 toc
-    %%
+    %% Plot point assessments to try and find a good location to attempt
     if 1
 
        figure
@@ -153,11 +178,14 @@ toc
         ylabel('Luminosity or Contrast')
 
     end
+    
+    
 %%
-
+            % Assess which points are worth trying
             possible_points=point_assessments(1,find(point_assessments(4,:)>32));
             
             for t=possible_points
+                % start trying possible points
 
                 start=[point3D(1)+t*vector3D(1);
                    point3D(2)+t*vector3D(2);
@@ -166,10 +194,12 @@ toc
                on_pin_bwd=1;
                pin_points=nan(3,1);
 
+               % attempt to find the pin orientation for the possible point
                 [ Direction1 ] = Find_Pin_Orientation( start(1),start(2),start(3) , geo, theta, contrast, luminosity , threshold ,0);
 
-                if isnan(Direction1)==0 
+                if isnan(Direction1)==0 % possible direction has been found
                     
+                    % initialize both forward and backward directions
                     fwd_point1=start;
                     fwd_point2=start-(start-Direction1);
                     
@@ -178,13 +208,13 @@ toc
 
                     pin_points=[pin_points,start,Direction1];
 
-                    while on_pin_fwd==1 || on_pin_bwd==1
+                    while on_pin_fwd==1 || on_pin_bwd==1 % once you walk off the pin in both directions, the loop should break
 
                         
-                        
+                        % walk along the pin forward attempting to find a next point
                         [ fwd_point3 ] = Walk_Along_Pin_2( fwd_point1, fwd_point2, geo, theta, contrast, luminosity , threshold ,0);
                         
-                        
+                        % forward point found, set next loop parameters
                         if isnan(fwd_point3)==0
                             pin_points=[ pin_points , fwd_point3 ];
                             fwd_point1=fwd_point2;
@@ -195,9 +225,10 @@ toc
                         end
                         
                         
-                        
+                        % walk along the pin backward attempting to find a next point in the opposite direction
                         [ bwd_point3 ] = Walk_Along_Pin_2( bwd_point1, bwd_point2, geo, theta, contrast, luminosity , threshold ,0);
                         
+                        % point found in the backward direction 
                         if isnan(bwd_point3)==0
                             pin_points=[ bwd_point3 , pin_points ];
                             bwd_point1=bwd_point2;
@@ -217,15 +248,17 @@ toc
             
             
             
-            if on_pin_fwd==0 && on_pin_bwd==0
+            if on_pin_fwd==0 && on_pin_bwd==0 % off pin in both direction 
                 pin_points(:,isnan(pin_points(1,:))==1)=[];
                 pin_length=sqrt(sum((pin_points(:,1)-pin_points(:,end)).^2));
                 
+                % check if the pin has satisfied the length constraint 
                 if (pin_length/0.0127) > threshold.length
-                    full_pin_found=1;
+                    full_pin_found=1; % valid pin has been found
                 end
             end
             
+            % set endpoints of the found pins as output
             if full_pin_found==1
                 Diagnostic='full_pin_found'
                 pin_length=pin_length;
@@ -237,7 +270,7 @@ toc
             end
 toc
 
-%%
+%% plot various diagnostics for the output pins 
 if 1
             %%
             figure

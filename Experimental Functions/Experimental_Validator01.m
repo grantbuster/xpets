@@ -1,9 +1,18 @@
 function [ out ] = Experimental_Validator01( points , theta , image_str , geo , setaxis , labels)
-%this function projects the three dimensional pins (threeDpins) from module 2 onto an
-%image along with Mike's results from module 1 (twoDendpoints). Theta is
-%the angle of the image (degrees) image_str is the image name w/ .jpg. plot
-%labels plots the number of each plotted item (should turn off w/ 0). Rest
-%is geometry. 
+
+% this function projects single 3D points (in meters) onto an image in the current working directory
+
+% INPUTS
+% points is a matrix [3,n] where n is the number of input points to plot
+% and [3,1]=[x1;y1;z1]
+% theta is a single number giving the image angle
+% image string is the name (include .jpg) of the image in the current
+% directory
+% geo is the structure data type of the current test geometry
+% setaxis can be used to set the image boundaries in pixels ([x1 x2 y1 y2])
+% labels plots the point index next to the points
+
+% THIS FUNCTION DOES NOT OUTPUT ANYTHING
 
 out=[];
 
