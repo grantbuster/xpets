@@ -26,16 +26,16 @@ for i=1:length(twoDendpoints(1,1,:))
 
 hold on
 
-%plot Mike's endpoints as circles
-% plot(twoDendpoints(2,1,i),twoDendpoints(1,1,i),'om','MarkerSize',2)
-% plot(twoDendpoints(2,2,i),twoDendpoints(1,2,i),'og','MarkerSize',2)
-% plot([twoDendpoints(2,1,i),twoDendpoints(2,2,i)],[twoDendpoints(1,1,i),twoDendpoints(1,2,i)],'r')
+% plot Mike's endpoints as circles
+plot(twoDendpoints(2,1,i),twoDendpoints(1,1,i),'om','MarkerSize',2)
+plot(twoDendpoints(2,2,i),twoDendpoints(1,2,i),'og','MarkerSize',2)
+plot([twoDendpoints(2,1,i),twoDendpoints(2,2,i)],[twoDendpoints(1,1,i),twoDendpoints(1,2,i)],'r')
 if plotlabels==1
                 text(twoDendpoints(2,1,i),twoDendpoints(1,1,i),num2str(i))
 end
 
-%plot Mike's endpoints as lines
-%         plot([twoDendpoints(2,1,i),twoDendpoints(2,2,i)],[twoDendpoints(1,1,i),twoDendpoints(1,2,i)],'k','MarkerSize',2)        
+% plot Mike's endpoints as lines
+        plot([twoDendpoints(2,1,i),twoDendpoints(2,2,i)],[twoDendpoints(1,1,i),twoDendpoints(1,2,i)],'k','MarkerSize',2)        
 end
     
     

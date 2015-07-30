@@ -35,7 +35,7 @@ if plotboolean==1
 end
 
 % set scan radius (m) from xyz
-r = 0.001;
+r = 0.0015;
 
 % sets the angular mesh, i.e. how many points are scanned in the spherical
 % shell that will be checked for pin orientation 
@@ -44,14 +44,7 @@ angle_mesh=pi/40;
 %% Mesh around a sphere centered at xyz looking for best direction 
 for phi=0:angle_mesh:2*pi
     for theta=0:(abs(phi-pi/2)+.5)/10:2*pi
-        
-        %% diagnostics plots
-        if plotboolean==1
-            plot3(x+r*cos(theta)*sin(phi) , ...
-            y+r*sin(theta)*sin(phi) , ...
-            z+r*cos(phi) , 'b.')
-        end
-        
+       
         %% check point in all five images
         [ output_luminosity.a , output_contrast.a ] = Look_at_Image2( ...
             x+r*cos(theta)*sin(phi) , ...
@@ -93,11 +86,25 @@ for phi=0:angle_mesh:2*pi
                 >threshold.found_con
             %% output data associated with tested point. can be either luminosity or contrast
             possible_directions(:,iter)=[x+r*cos(theta)*sin(phi);y+r*sin(theta)*sin(phi);z+r*cos(phi)];
-%             direction_data(:,iter)=(output_luminosity.a+output_luminosity.b+output_luminosity.c+output_luminosity.d+output_luminosity.e)/5;
-            direction_data(:,iter)=(output_contrast.a+output_contrast.b+output_contrast.c+output_contrast.d+output_contrast.e)/5;
+            direction_data(:,iter)=(output_luminosity.a+output_luminosity.b+output_luminosity.c+output_luminosity.d+output_luminosity.e)/5;
+%             direction_data(:,iter)=(output_contrast.a+output_contrast.b+output_contrast.c+output_contrast.d+output_contrast.e)/5;
             iter=iter+1;
             
+            
+
+        
         end
+        
+        
+            %% diagnostics plots
+            if plotboolean==1
+                luminosity_sum=output_luminosity.a+output_luminosity.b+output_luminosity.c+output_luminosity.d+output_luminosity.e;
+                contrast_sum=output_contrast.a+output_contrast.b+output_contrast.c+output_contrast.d+output_contrast.e;
+                               
+                plot3(x+r*cos(theta)*sin(phi) , ...
+                y+r*sin(theta)*sin(phi) , ...
+                z+r*cos(phi) , '.','Color',[luminosity_sum/5 0 0])
+            end
         
     end
 end

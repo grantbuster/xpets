@@ -41,8 +41,8 @@ if intersection1(1)>2 && intersection1(1)<2998 && intersection1(3)>2 && intersec
     
     x_lo = floor(intersection1(1));
     y_lo = floor(intersection1(3));
-    output_contrast = fGetMasterInterpValue(intersection1(1),intersection1(3),contrast(x_lo:x_lo+1,y_lo:y_lo+1));
-    output_luminosity = fGetMasterInterpValue(intersection1(1),intersection1(3),luminosity(x_lo:x_lo+1,y_lo:y_lo+1));
+    output_contrast = fGetMasterInterpValue(x_lo,y_lo,contrast(y_lo:y_lo+1,x_lo:x_lo+1));
+    output_luminosity = fGetMasterInterpValue(x_lo,y_lo,luminosity(y_lo:y_lo+1,x_lo:x_lo+1));
 
 
 

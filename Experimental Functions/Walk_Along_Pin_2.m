@@ -23,7 +23,7 @@ direction_data=nan(1,100);
 iter=1;
 
 % Delta is how far you want to walk (meters) from start PAST direction
-delta=0.0015;
+delta=0.001;
 
 % define relevant vectors
 vector=Direction-Start;
